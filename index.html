@@ -21,12 +21,10 @@
       cursor: none;
       font-family: 'Boogaloo', cursive;
     }
-    /* ── canvas background ── */
     #bgCanvas {
       position: fixed; inset: 0; z-index: 0;
       pointer-events: none;
     }
-    /* ── hero text ── */
     #hero {
       position: fixed; inset: 0; z-index: 10;
       display: flex; flex-direction: column;
@@ -74,7 +72,6 @@
       from { opacity:0; transform: translateY(12px); }
       to { opacity:1; transform: translateY(0); }
     }
-    /* ── emoji particles ── */
     .emoji {
       position: fixed;
       z-index: 5;
@@ -83,7 +80,6 @@
       will-change: transform;
       transition: filter 0.1s;
     }
-    /* ── custom cursor ── */
     #cursor {
       position: fixed; z-index: 999;
       width: 48px; height: 48px;
@@ -95,7 +91,6 @@
       transition: transform 0.08s ease;
       filter: drop-shadow(0 0 8px #ff6ef7);
     }
-    /* ── sparkle burst on click ── */
     .burst {
       position: fixed;
       z-index: 20;
@@ -108,7 +103,6 @@
       60% { opacity:1; }
       100% { opacity:0; transform: translate(var(--tx2),var(--ty2)) scale(1.2); }
     }
-    /* ── ripple ring on click ── */
     .ripple {
       position: fixed; z-index: 4;
       border-radius: 50%;
@@ -121,7 +115,6 @@
     @keyframes ripple {
       to { width: 120px; height: 120px; margin: -60px 0 0 -60px; opacity: 0; }
     }
-    /* ── aurora ── */
     #aurora {
       position: fixed; inset: 0; z-index: 1;
       pointer-events: none;
@@ -152,14 +145,12 @@
 const EMOJIS = [
   '🎉','🎊','✨','💖','🌟','🥳','💫','🎈','🦋','🌈','🎁','🏆','💐','🌸','🎀','💝','🔥','⭐','🌺','🎶',
   '💯','🙌','👑','🍀','🎠','🦄','🌙','☀️','🌊','💎','🚀','🍾','🕺','💃','🎤','🎸','🏅','🌟','❤️','🧡',
-  '💛','💚','💙','💜','🖤','🎇','🎆','🪩','🦋','🌺','🍄','🦄','🐙','🦩','🦋','🌈','🍭','🦋','🌸','🦋',
-  '🎉','🎊','✨','💖','🌟','🥳','💫','🎈','🦋','🌈','🎁','🏆','💐','🌸','🎀','💝','🔥','⭐','🌺','🎶',
-  '💯','🙌','👑','🍀','🎠','🦄','🌙','☀️','🌊','💎','🚀','🍾','🕺','💃','🎤','🎸','🏅','🌟','❤️','🧡',
-  '💛','💚','💙','💜','🖤','🎇','🎆','🪩','🦋','🌺','🍄','🦄','🐙','🦩','🦋','🌈','🍭','🦋','🌸','🦋'
+  '💛','💚','💙','💜','🖤','🎇','🎆','🪩','🍄','🦩','🍭','🌸','🦋','🐙','🎇','🦄','💥','🌈','🍾','🕺'
 ];
-const PARTICLE_COUNT = 180;           // ← More emojis!
-const MOUSE_RADIUS = 220;
-const MOUSE_STRENGTH = 0.085;         // stronger mouse interaction
+
+const PARTICLE_COUNT = 180;
+const MOUSE_RADIUS = 240;
+const MOUSE_STRENGTH = 0.09;
 
 // ─── STARS BACKGROUND ─────────────────────────────────────────
 const bgCanvas = document.getElementById('bgCanvas');
@@ -196,24 +187,27 @@ window.addEventListener('resize', () => { resizeBg(); initStars(); });
 // ─── EMOJI PARTICLES ──────────────────────────────────────────
 const W = () => window.innerWidth;
 const H = () => window.innerHeight;
+
 const particles = Array.from({length: PARTICLE_COUNT}, (_, i) => {
   const el = document.createElement('div');
   el.className = 'emoji';
   el.textContent = EMOJIS[i % EMOJIS.length];
   document.body.appendChild(el);
-  const size = 1.1 + Math.random() * 2.8;
+  
+  const size = 1.1 + Math.random() * 2.9;
   el.style.fontSize = size + 'rem';
+
   return {
     el,
     x: Math.random() * W(),
     y: Math.random() * H(),
-    vx: (Math.random() - 0.5) * 3.2,     // ← much freer movement
-    vy: (Math.random() - 0.5) * 3.2 - 0.4,
+    vx: (Math.random() - 0.5) * 4.2,      // even freer initial speed
+    vy: (Math.random() - 0.5) * 4.2 - 0.3,
     size,
     rot: Math.random() * 360,
-    rotSpeed: (Math.random() - 0.5) * 4.5,   // faster spinning
+    rotSpeed: (Math.random() - 0.5) * 5.5,
     wobble: Math.random() * Math.PI * 2,
-    wobbleSpeed: 0.035 + Math.random() * 0.055, // stronger wobble
+    wobbleSpeed: 0.04 + Math.random() * 0.06,
     scale: 1,
   };
 });
@@ -226,12 +220,13 @@ document.addEventListener('mousemove', e => {
   cursor.style.left = mx + 'px';
   cursor.style.top = my + 'px';
 });
+
 const cursorEmojis = ['🌟','✨','💫','⭐','🌈','🔥','💖','🦄','🎉','🪩'];
 let cursorIdx = 0;
 setInterval(() => {
   cursorIdx = (cursorIdx + 1) % cursorEmojis.length;
   cursor.textContent = cursorEmojis[cursorIdx];
-}, 450);
+}, 420);
 
 // ─── CLICK BURST ──────────────────────────────────────────────
 document.addEventListener('click', e => {
@@ -242,19 +237,19 @@ document.addEventListener('click', e => {
   document.body.appendChild(ripple);
   ripple.addEventListener('animationend', () => ripple.remove());
 
-  const count = 18; // bigger bursts
+  const count = 20;
   for (let i = 0; i < count; i++) {
     const b = document.createElement('div');
     b.className = 'burst';
     b.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
     const angle = (i / count) * Math.PI * 2;
-    const dist = 70 + Math.random() * 110;
+    const dist = 75 + Math.random() * 120;
     b.style.left = e.clientX + 'px';
     b.style.top = e.clientY + 'px';
     b.style.setProperty('--tx', `${Math.cos(angle)*dist*0.35}px`);
     b.style.setProperty('--ty', `${Math.sin(angle)*dist*0.35}px`);
-    b.style.setProperty('--tx2', `${Math.cos(angle)*dist*1.1}px`);
-    b.style.setProperty('--ty2', `${Math.sin(angle)*dist*1.1}px`);
+    b.style.setProperty('--tx2', `${Math.cos(angle)*dist*1.15}px`);
+    b.style.setProperty('--ty2', `${Math.sin(angle)*dist*1.15}px`);
     document.body.appendChild(b);
     b.addEventListener('animationend', () => b.remove());
   }
@@ -264,38 +259,40 @@ document.addEventListener('click', e => {
 function loop() {
   drawStars();
   const w = W(), h = H();
+
   particles.forEach(p => {
     const dx = p.x - mx;
     const dy = p.y - my;
     const dist = Math.sqrt(dx*dx + dy*dy);
 
+    // Mouse interaction only
     if (dist < MOUSE_RADIUS) {
-      const force = (1 - dist / MOUSE_RADIUS) * MOUSE_STRENGTH * 14;
+      const force = (1 - dist / MOUSE_RADIUS) * MOUSE_STRENGTH * 15;
       p.vx += (dx / dist) * force;
       p.vy += (dy / dist) * force;
     }
 
-    // Less damping = more free floating
-    p.vx *= 0.968;
-    p.vy *= 0.968;
+    // Very light damping → very free floating
+    p.vx *= 0.962;
+    p.vy *= 0.962;
 
-    // Weaker center pull
-    p.vx += (w/2 - p.x) * 0.000035;
-    p.vy += (h/2 - p.y) * 0.000035;
+    // NO CENTER ATTRACTION (removed)
 
+    // Wobble for organic feel
     p.wobble += p.wobbleSpeed;
-    p.x += p.vx + Math.sin(p.wobble) * 0.75;
-    p.y += p.vy + Math.cos(p.wobble * 0.8) * 0.65;
+    p.x += p.vx + Math.sin(p.wobble) * 0.85;
+    p.y += p.vy + Math.cos(p.wobble * 0.75) * 0.75;
     p.rot += p.rotSpeed;
 
-    // wrap around
-    if (p.x < -80) p.x = w + 80;
-    if (p.x > w + 80) p.x = -80;
-    if (p.y < -80) p.y = h + 80;
-    if (p.y > h + 80) p.y = -80;
+    // Wrap around screen
+    if (p.x < -100) p.x = w + 100;
+    if (p.x > w + 100) p.x = -100;
+    if (p.y < -100) p.y = h + 100;
+    if (p.y > h + 100) p.y = -100;
 
-    const targetScale = dist < MOUSE_RADIUS ? 1 + (1 - dist/MOUSE_RADIUS) * 1.45 : 1;
-    p.scale += (targetScale - p.scale) * 0.12;
+    // Scale when near mouse
+    const targetScale = dist < MOUSE_RADIUS ? 1 + (1 - dist/MOUSE_RADIUS) * 1.5 : 1;
+    p.scale += (targetScale - p.scale) * 0.13;
 
     p.el.style.transform =
       `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) rotate(${p.rot.toFixed(1)}deg) scale(${p.scale.toFixed(3)})`;
